@@ -37,6 +37,11 @@ namespace SqlApi
                 return Param(new SqlParameter(name, value ?? DBNull.Value));
             }
 
+            public Command OutParam(string name, SqlDbType dbType, out SqlParameter parameter)
+            {
+                return Param(parameter = new SqlParameter(name, dbType) { Direction = ParameterDirection.Output });
+            }
+
             public Task ExecuteAsync()
             {
                 return UsingCommandAsync(c => c.ExecuteNonQueryAsync());
