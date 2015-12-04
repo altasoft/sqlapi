@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace SqlApi
@@ -40,6 +41,12 @@ namespace SqlApi
             public Command OutParam(string name, SqlDbType dbType, out SqlParameter parameter)
             {
                 return Param(parameter = new SqlParameter(name, dbType) { Direction = ParameterDirection.Output });
+            }
+
+            public Command Params(IEnumerable<SqlParameter> collection)
+            {
+                _parameters.AddRange(collection);
+                return this;
             }
 
             public Task ExecuteAsync()

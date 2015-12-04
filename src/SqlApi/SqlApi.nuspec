@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>SqlApi</id>
-    <version>0.0.2.2</version>
+    <version>0.0.3</version>
     <title>SqlApi</title>
     <authors>ALTA Software</authors>
     <owners>ALTA Software</owners>    
