@@ -49,6 +49,11 @@ namespace SqlApi
                 return this;
             }
 
+            public void Execute()
+            {
+                UsingCommand(c => c.ExecuteNonQuery());
+            }
+
             public Task ExecuteAsync()
             {
                 return UsingCommandAsync(c => c.ExecuteNonQueryAsync());
