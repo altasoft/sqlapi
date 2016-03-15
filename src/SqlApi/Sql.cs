@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace SqlApi
@@ -38,9 +37,19 @@ namespace SqlApi
                 return Param(new SqlParameter(name, value ?? DBNull.Value));
             }
 
-            public Command OutParam(string name, SqlDbType dbType, out SqlParameter parameter)
+            public Command OutParam(string name,
+                SqlDbType dbType,
+                out SqlParameter parameter)
             {
                 return Param(parameter = new SqlParameter(name, dbType) { Direction = ParameterDirection.Output });
+            }
+
+            public Command OutParam(string name,
+                SqlDbType dbType,
+                int size,
+                out SqlParameter parameter)
+            {
+                return Param(parameter = new SqlParameter(name, dbType, size) { Direction = ParameterDirection.Output });
             }
 
             public Command Params(IEnumerable<SqlParameter> collection)
