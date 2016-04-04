@@ -14,6 +14,7 @@ namespace SqlApi
             private readonly string _commandText;
             private readonly CommandType _commandType;
             private readonly List<SqlParameter> _parameters;
+            private bool _transactional;
 
             public Command(string connectionString,
                 string commandText,
@@ -55,6 +56,12 @@ namespace SqlApi
             public Command Params(IEnumerable<SqlParameter> collection)
             {
                 _parameters.AddRange(collection);
+                return this;
+            }
+
+            public Command Transactional()
+            {
+                this._transactional = true;
                 return this;
             }
 
@@ -162,7 +169,15 @@ namespace SqlApi
                         command.Parameters.AddRange(this._parameters.ToArray());
                         command.CommandType = this._commandType;
                         connection.Open();
-                        action(command);
+
+                        if (this._transactional)
+                        {
+                            UsingTransaction(command, action);
+                        }
+                        else
+                        {
+                            action(command);
+                        }
                     }
                 }
             }
@@ -176,10 +191,53 @@ namespace SqlApi
                         command.Parameters.AddRange(this._parameters.ToArray());
                         command.CommandType = this._commandType;
                         await connection.OpenAsync();
-                        await func(command);
+                        await (this._transactional ? UsingTransactionAsync(command, func) : func(command));
                     }
                 }
             }
+
+            private static void UsingTransaction(SqlCommand command,
+                Action<SqlCommand> action)
+            {
+                var transaction = command.Connection.BeginTransaction();
+                command.Transaction = transaction;
+
+                try
+                {
+                    action(command);
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                finally
+                {
+                    transaction.Dispose();
+                }
+            }
+
+            private static async Task UsingTransactionAsync(SqlCommand command,
+                Func<SqlCommand, Task> func)
+            {
+                var transaction = command.Connection.BeginTransaction();
+                command.Transaction = transaction;
+
+                try
+                {
+                    await func(command);
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                finally
+                {
+                    transaction.Dispose();
+                }
+            }
+
         }
 
         private readonly string _connectionString;
