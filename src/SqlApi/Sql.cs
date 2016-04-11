@@ -126,6 +126,22 @@ namespace SqlApi
                 return result;
             }
 
+            public async Task<Dictionary<TKey, TElement>> QueryAsDictionaryAsync<TKey, TElement>(Func<IDataRecord, TKey> readKey,
+                Func<IDataRecord, TElement> readElement)
+            {
+                var result = new Dictionary<TKey, TElement>();
+                await QueryAsync(r => result.Add(readKey(r), readElement(r)));
+                return result;
+            }
+
+            public Dictionary<TKey, TElement> QueryAsDictionary<TKey, TElement>(Func<IDataRecord, TKey> readKey,
+                Func<IDataRecord, TElement> readElement)
+            {
+                var result = new Dictionary<TKey, TElement>();
+                Query(r => result.Add(readKey(r), readElement(r)));
+                return result;
+            }
+
             public async Task QueryAsync(Action<IDataRecord> read)
             {
                 await UsingCommandAsync(async c =>

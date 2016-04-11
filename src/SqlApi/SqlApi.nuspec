@@ -2,14 +2,14 @@
 <package >
   <metadata>
     <id>SqlApi</id>
-    <version>0.0.3.3</version>
+    <version>0.0.5.0</version>
     <title>SqlApi</title>
     <authors>ALTA Software</authors>
     <owners>ALTA Software</owners>
     <projectUrl>https://github.com/altasoft/sqlapi</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Sql fluent command API</description>
-    <releaseNotes>Added new method</releaseNotes>
+    <releaseNotes>Added new methods</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>Sql fluent api</tags>
   </metadata>
