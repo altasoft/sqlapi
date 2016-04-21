@@ -221,6 +221,7 @@ namespace SqlApi
                 try
                 {
                     action(command);
+                    transaction.Commit();
                 }
                 catch
                 {
@@ -242,6 +243,7 @@ namespace SqlApi
                 try
                 {
                     await func(command);
+                    transaction.Commit();
                 }
                 catch
                 {
