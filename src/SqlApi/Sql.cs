@@ -15,6 +15,7 @@ namespace SqlApi
             private readonly CommandType _commandType;
             private readonly List<SqlParameter> _parameters;
             private bool _transactional;
+            private int? _timeout;
 
             public Command(string connectionString,
                 string commandText,
@@ -62,6 +63,12 @@ namespace SqlApi
             public Command Transactional()
             {
                 this._transactional = true;
+                return this;
+            }
+
+            public Command Timeout(int value)
+            {
+                this._timeout = value;
                 return this;
             }
 
@@ -184,6 +191,12 @@ namespace SqlApi
                     {
                         command.Parameters.AddRange(this._parameters.ToArray());
                         command.CommandType = this._commandType;
+
+                        if (this._timeout != null)
+                        {
+                            command.CommandTimeout = this._timeout.Value;
+                        }
+                                         
                         connection.Open();
 
                         if (this._transactional)
@@ -206,6 +219,12 @@ namespace SqlApi
                     {
                         command.Parameters.AddRange(this._parameters.ToArray());
                         command.CommandType = this._commandType;
+
+                        if (this._timeout != null)
+                        {
+                            command.CommandTimeout = this._timeout.Value;
+                        }
+
                         await connection.OpenAsync();
                         await (this._transactional ? UsingTransactionAsync(command, func) : func(command));
                     }
