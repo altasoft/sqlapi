@@ -72,14 +72,22 @@ namespace SqlApi
                 return this;
             }
 
-            public void Execute()
+            public int Execute()
             {
-                UsingCommand(c => c.ExecuteNonQuery());
+                var result = 0;
+
+                UsingCommand(c => result = c.ExecuteNonQuery());
+
+                return result;
             }
 
-            public Task ExecuteAsync()
+            public async Task<int> ExecuteAsync()
             {
-                return UsingCommandAsync(c => c.ExecuteNonQueryAsync());
+                var result = 0;
+
+                await UsingCommandAsync(async c => result = await c.ExecuteNonQueryAsync());
+
+                return result;
             }
 
             public async Task<TResult> QueryOneAsync<TResult>(Func<IDataRecord, TResult> map)
