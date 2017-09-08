@@ -92,21 +92,50 @@ namespace SqlApi
 
             public async Task<TResult> QueryOneAsync<TResult>(Func<IDataRecord, TResult> map)
                 where TResult : class
-            {
-                TResult result = null;
+                => (await QueryOneAsTupleAsync(map)).result;
 
+            public async Task<(bool found, TResult result)> QueryOneAsTupleAsync<TResult>(Func<IDataRecord, TResult> map)
+            {
+                var found = false;
+                var result = default(TResult);
+                
                 await UsingCommandAsync(async c =>
                 {
                     using (var reader = await c.ExecuteReaderAsync(CommandBehavior.SingleRow))
                     {
                         if (await reader.ReadAsync())
                         {
+                            found = true;
                             result = map(reader);
                         }
                     }
                 });
 
-                return result;
+                return (found, result);
+            }
+
+            public TResult QueryOne<TResult>(Func<IDataRecord, TResult> map)
+                where TResult : class
+                => QueryOneAsTuple(map).result;
+
+            public (bool found, TResult result) QueryOneAsTuple<TResult>(Func<IDataRecord, TResult> map)
+            {
+                var found = false;
+                var result = default(TResult);
+
+                UsingCommand(c =>
+                {
+                    using (var reader = c.ExecuteReader(CommandBehavior.SingleRow))
+                    {
+                        if (reader.Read())
+                        {
+                            found = true;
+                            result = map(reader);
+                        }
+                    }
+                });
+
+                return (found, result);
             }
 
             public IEnumerable<TElement> Query<TElement>(Func<IDataRecord, TElement> map)
@@ -204,7 +233,7 @@ namespace SqlApi
                         {
                             command.CommandTimeout = this._timeout.Value;
                         }
-                                         
+
                         connection.Open();
 
                         if (this._transactional)
@@ -282,7 +311,6 @@ namespace SqlApi
                     transaction.Dispose();
                 }
             }
-
         }
 
         private readonly string _connectionString;
