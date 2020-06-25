@@ -14,7 +14,15 @@
     <PackageTags>Sql fluent api</PackageTags>
     <Copyright>Copyright © ALTA Software Llc. 2017</Copyright>
     <Version>1.0.1</Version>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
     <PackageReference Include="system.data.sqlclient">
